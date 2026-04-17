@@ -15,6 +15,12 @@ from .views_plans import (
     UpdatePlanYearOfBirthView,
     UpdatePlanLocationView,
 )
+from .views_incomes import (
+    IncomesView,
+    IncomesByPlanView,
+    DeleteIncomeView,
+    UpdateIncomeView,
+)
 
 urlpatterns = [
     # Users
@@ -35,4 +41,10 @@ urlpatterns = [
     path("plans/update/currency/", UpdatePlanCurrencyView.as_view()),
     path("plans/update/yearofbirth/", UpdatePlanYearOfBirthView.as_view()),
     path("plans/update/location/", UpdatePlanLocationView.as_view()),
+
+    # Incomes
+    path("incomes/", IncomesView.as_view()),
+    path("incomes/<int:plan_id>/", IncomesByPlanView.as_view()),
+    path("incomes/delete/", DeleteIncomeView.as_view()),
+    path("incomes/update/", UpdateIncomeView.as_view()),
 ]
