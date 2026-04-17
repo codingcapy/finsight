@@ -50,6 +50,8 @@ from .views_generations import (
     DeleteGenerationView,
 )
 
+from .views_ai import GenerateAIView
+
 urlpatterns = [
     # Users
     path("users/", CreateUserView.as_view()),
@@ -103,4 +105,7 @@ urlpatterns = [
     # Generations
     path("generations/<int:plan_id>/", GenerationsByPlanView.as_view()),
     path("generations/delete/", DeleteGenerationView.as_view()),
+
+    # AI
+    path("ai/generate/", GenerateAIView.as_view()),
 ]
