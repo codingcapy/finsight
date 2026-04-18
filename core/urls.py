@@ -15,9 +15,25 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.generic import TemplateView
+from django.conf import settings
+import os
+
+# Catch-all view that serves index.html for React Router
+class FrontendView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        from django.http import HttpResponse
+        index_path = os.path.join(settings.FRONTEND_DIR, "index.html")
+        try:
+            with open(index_path, "r", encoding="utf-8") as f:
+                return HttpResponse(f.read(), content_type="text/html")
+        except FileNotFoundError:
+            from django.http import HttpResponseNotFound
+            return HttpResponseNotFound("Frontend not built yet. Run: npm run build")
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     path("api/v0/", include("api.urls")),
+    re_path(r"^.*$", FrontendView.as_view()),  # catch-all — must be last
 ]
