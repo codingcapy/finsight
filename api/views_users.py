@@ -206,13 +206,13 @@ def get_request_user(request) -> User | None:
 def serialize_user(user: User) -> dict:
     """Converts a User model instance to a JSON-safe dict."""
     return {
-        "user_id": user.user_id,
+        "userId": user.user_id,
         "username": user.username,
         "email": user.email,
-        "profile_pic": user.profile_pic,
+        "profilePic": user.profile_pic,
         "role": user.role,
         "status": user.status,
         "preference": user.preference,
-        "created_at": user.created_at.isoformat(),
-        "current_plan": user.current_plan,
+        "createdAt": user.created_at.isoformat(),
+        "currentPlan": user.current_plan,
     }

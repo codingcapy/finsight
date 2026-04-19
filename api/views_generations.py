@@ -10,10 +10,10 @@ from .views_users import parse_body
 
 def serialize_generation(generation: Generation) -> dict:
     return {
-        "generation_id": generation.generation_id,
-        "plan_id": generation.plan_id,
+        "generationId": generation.generation_id,
+        "planId": generation.plan_id,
         "content": generation.content,
-        "created_at": generation.created_at.isoformat(),
+        "createdAt": generation.created_at.isoformat(),
     }
 
 

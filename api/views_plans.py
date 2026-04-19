@@ -33,15 +33,15 @@ def get_request_user(request) -> User | None:
 
 def serialize_plan(plan: Plan) -> dict:
     return {
-        "plan_id": plan.plan_id,
-        "user_id": plan.user_id,
+        "planId": plan.plan_id,
+        "userId": plan.user_id,
         "title": plan.title,
         "icon": plan.icon,
         "currency": plan.currency,
         "location": plan.location,
-        "year_of_birth": plan.year_of_birth,
+        "yearOfBirth": plan.year_of_birth,
         "status": plan.status,
-        "created_at": plan.created_at.isoformat(),
+        "createdAt": plan.created_at.isoformat(),
     }
 
 

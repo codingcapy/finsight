@@ -11,12 +11,12 @@ from .views_users import parse_body
 
 def serialize_financial_goal(goal: FinancialGoal) -> dict:
     return {
-        "financial_goal_id": goal.financial_goal_id,
-        "plan_id": goal.plan_id,
+        "financialGoalId": goal.financial_goal_id,
+        "planId": goal.plan_id,
         "name": goal.name,
         "amount": goal.amount,
-        "target_date": goal.target_date.isoformat(),
-        "created_at": goal.created_at.isoformat(),
+        "targetDate": goal.target_date.isoformat(),
+        "createdAt": goal.created_at.isoformat(),
     }
 
 

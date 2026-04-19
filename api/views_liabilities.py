@@ -10,13 +10,13 @@ from .views_users import parse_body
 
 def serialize_liability(liability: Liability) -> dict:
     return {
-        "liability_id": liability.liability_id,
-        "plan_id": liability.plan_id,
+        "liabilityId": liability.liability_id,
+        "planId": liability.plan_id,
         "name": liability.name,
         "amount": liability.amount,
         "interest": liability.interest,
         "status": liability.status,
-        "created_at": liability.created_at.isoformat(),
+        "createdAt": liability.created_at.isoformat(),
     }
 
 

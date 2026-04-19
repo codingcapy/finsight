@@ -10,14 +10,14 @@ from .views_users import parse_body
 
 def serialize_income(income: Income) -> dict:
     return {
-        "income_id": income.income_id,
-        "plan_id": income.plan_id,
+        "incomeId": income.income_id,
+        "planId": income.plan_id,
         "company": income.company,
         "position": income.position,
         "amount": income.amount,
         "tax": income.tax,
         "status": income.status,
-        "created_at": income.created_at.isoformat(),
+        "createdAt": income.created_at.isoformat(),
     }
 
 

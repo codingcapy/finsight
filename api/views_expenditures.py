@@ -10,12 +10,12 @@ from .views_users import parse_body
 
 def serialize_expenditure(expenditure: Expenditure) -> dict:
     return {
-        "expenditure_id": expenditure.expenditure_id,
-        "plan_id": expenditure.plan_id,
+        "expenditureId": expenditure.expenditure_id,
+        "planId": expenditure.plan_id,
         "name": expenditure.name,
         "amount": expenditure.amount,
         "status": expenditure.status,
-        "created_at": expenditure.created_at.isoformat(),
+        "createdAt": expenditure.created_at.isoformat(),
     }
 
 

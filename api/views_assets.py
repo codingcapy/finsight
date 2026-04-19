@@ -10,13 +10,13 @@ from .views_users import parse_body
 
 def serialize_asset(asset: Asset) -> dict:
     return {
-        "asset_id": asset.asset_id,
-        "plan_id": asset.plan_id,
+        "assetId": asset.asset_id,
+        "planId": asset.plan_id,
         "name": asset.name,
         "value": asset.value,
         "roi": asset.roi,
         "status": asset.status,
-        "created_at": asset.created_at.isoformat(),
+        "createdAt": asset.created_at.isoformat(),
     }
 
 
