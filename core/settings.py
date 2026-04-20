@@ -22,12 +22,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a#9ktou*e*ottm1h4*pfobjinb+i#k6=o6rp*-#-7$ppb#f8+l'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-a#9ktou*e*ottm1h4*pfobjinb+i#k6=o6rp*-#-7$ppb#f8+l')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".railway.app", "finsight-paulkimdev.up.railway.app"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://finsight-paulkimdev.up.railway.app",
+    "https://*.railway.app",
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
@@ -130,8 +137,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Frontend (React/Vite build output)
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend", "dist")
 
-STATICFILES_DIRS = [
-    FRONTEND_DIR,
-]
+STATICFILES_DIRS = []
+if os.path.isdir(FRONTEND_DIR):
+    STATICFILES_DIRS.append(FRONTEND_DIR)
 
-WHITENOISE_ROOT = FRONTEND_DIR
+if os.path.isdir(FRONTEND_DIR):
+    WHITENOISE_ROOT = FRONTEND_DIR
