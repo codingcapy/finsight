@@ -36,6 +36,26 @@ def parse_body(request) -> dict:
         return {}
 
 
+def ensure_valid_current_plan(user: User) -> int:
+    """Ensures user.current_plan points to a plan owned by the user."""
+    if user.current_plan and Plan.objects.filter(
+        plan_id=user.current_plan,
+        user=user,
+    ).exists():
+        return user.current_plan
+
+    fallback_plan = Plan.objects.filter(user=user).order_by("plan_id").first()
+    if not fallback_plan:
+        fallback_plan = Plan.objects.create(
+            user=user,
+            title=f"{user.username}'s plan",
+        )
+
+    user.current_plan = fallback_plan.plan_id
+    user.save(update_fields=["current_plan"])
+    return user.current_plan
+
+
 # --- Views ---
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -82,10 +102,13 @@ class CreateUserView(View):
         )
 
         # Auto-create default plan (mirrors Hono behavior)
-        Plan.objects.create(
+        new_plan = Plan.objects.create(
             user=user,
             title=f"{user.username}'s plan",
         )
+
+        user.current_plan = new_plan.plan_id
+        user.save(update_fields=["current_plan"])
 
         return JsonResponse({"user": serialize_user(user)}, status=200)
 
@@ -104,6 +127,9 @@ class UpdateCurrentPlanView(View):
 
         if current_plan is None or not isinstance(current_plan, int):
             return JsonResponse({"message": "Invalid currentPlan"}, status=400)
+
+        if not Plan.objects.filter(plan_id=current_plan, user=user).exists():
+            return JsonResponse({"message": "Unauthorized"}, status=401)
 
         user.current_plan = current_plan
         user.save()
@@ -205,6 +231,7 @@ def get_request_user(request) -> User | None:
 
 def serialize_user(user: User) -> dict:
     """Converts a User model instance to a JSON-safe dict."""
+    current_plan = ensure_valid_current_plan(user)
     return {
         "userId": user.user_id,
         "username": user.username,
@@ -214,5 +241,5 @@ def serialize_user(user: User) -> dict:
         "status": user.status,
         "preference": user.preference,
         "createdAt": user.created_at.isoformat(),
-        "currentPlan": user.current_plan,
+        "currentPlan": current_plan,
     }
