@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 from .models import Income, Plan
-from .views_plans import get_request_user, serialize_plan
+from .views_plans import get_request_user
 from .views_users import parse_body
 
 
@@ -58,7 +58,7 @@ class IncomesView(View):
             amount=amount,
             tax=tax,
         )
-        return JsonResponse({"plan": serialize_income(income)}, status=200)
+        return JsonResponse({"income": serialize_income(income)}, status=200)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
