@@ -7,6 +7,7 @@ from .models import Asset, Plan
 from .views_plans import get_request_user
 from .views_users import parse_body
 
+from .helpers import check_plan_item_limit
 
 def serialize_asset(asset: Asset) -> dict:
     return {
@@ -39,6 +40,9 @@ class AssetsView(View):
             Plan.objects.get(plan_id=plan_id, user=user)
         except Plan.DoesNotExist:
             return JsonResponse({"message": "Unauthorized"}, status=401)
+        
+        if not check_plan_item_limit(plan_id, Asset):
+            return JsonResponse({"message": "..."}, status=400)
 
         asset = Asset.objects.create(
             plan_id=plan_id,

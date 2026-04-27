@@ -7,6 +7,7 @@ from .models import Income, Plan
 from .views_plans import get_request_user
 from .views_users import parse_body
 
+from .helpers import check_plan_item_limit
 
 def serialize_income(income: Income) -> dict:
     return {
@@ -50,6 +51,9 @@ class IncomesView(View):
 
         if not check_plan_ownership(user, plan_id):
             return JsonResponse({"message": "Unauthorized"}, status=401)
+        
+        if not check_plan_item_limit(plan_id, Income):
+            return JsonResponse({"message": "..."}, status=400)
 
         income = Income.objects.create(
             plan_id=plan_id,

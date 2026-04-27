@@ -7,6 +7,7 @@ from .models import Expenditure, Plan
 from .views_plans import get_request_user
 from .views_users import parse_body
 
+from .helpers import check_plan_item_limit
 
 def serialize_expenditure(expenditure: Expenditure) -> dict:
     return {
@@ -40,6 +41,9 @@ class ExpendituresView(View):
             Plan.objects.get(plan_id=plan_id, user=user)
         except Plan.DoesNotExist:
             return JsonResponse({"message": "Unauthorized"}, status=401)
+        
+        if not check_plan_item_limit(plan_id, Expenditure):
+            return JsonResponse({"message": "..."}, status=400)
 
         expenditure = Expenditure.objects.create(
             plan_id=plan_id,

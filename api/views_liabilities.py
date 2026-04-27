@@ -7,6 +7,7 @@ from .models import Liability, Plan
 from .views_plans import get_request_user
 from .views_users import parse_body
 
+from .helpers import check_plan_item_limit
 
 def serialize_liability(liability: Liability) -> dict:
     return {
@@ -39,6 +40,9 @@ class LiabilitiesView(View):
             Plan.objects.get(plan_id=plan_id, user=user)
         except Plan.DoesNotExist:
             return JsonResponse({"message": "Unauthorized"}, status=401)
+        
+        if not check_plan_item_limit(plan_id, Liability):
+            return JsonResponse({"message": "..."}, status=400)
 
         liability = Liability.objects.create(
             plan_id=plan_id,

@@ -8,6 +8,7 @@ from .models import FinancialGoal, Plan
 from .views_plans import get_request_user
 from .views_users import parse_body
 
+from .helpers import check_plan_item_limit
 
 def serialize_financial_goal(goal: FinancialGoal) -> dict:
     return {
@@ -44,6 +45,9 @@ class FinancialGoalsView(View):
         target_date = parse_datetime(target_date_str) if target_date_str else None
         if not target_date:
             return JsonResponse({"message": "Invalid or missing targetDate (use ISO format)"}, status=400)
+        
+        if not check_plan_item_limit(plan_id, FinancialGoal):
+            return JsonResponse({"message": "..."}, status=400)
 
         goal = FinancialGoal.objects.create(
             plan_id=plan_id,
