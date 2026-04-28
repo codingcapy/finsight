@@ -21,7 +21,7 @@ import { LiabilityItem } from "../components/LiabilityItem";
 import { getFinancialGoalsByPlanIdQueryOptions } from "../lib/api/financialGoals";
 import { FinancialGoalItem } from "../components/FinancialGoalItem";
 import {
-  getGenerationsByPlanIdQueryOptions,
+  useInfiniteGenerationsByPlanIdQuery,
   useCreateGenerationMutation,
 } from "../lib/api/generations";
 import { GenerationItem } from "../components/GenerationItem";
@@ -88,13 +88,29 @@ function Dashboard() {
     enabled: !!plan?.planId,
   });
   const {
-    data: generations,
+    data: generationsData,
     isLoading: generationsLoading,
     error: generationsError,
-  } = useQuery({
-    ...getGenerationsByPlanIdQueryOptions(plan?.planId ?? 0),
-    enabled: !!plan?.planId,
-  });
+    fetchNextPage: fetchNextGenerationsPage,
+    hasNextPage: hasNextGenerationsPage,
+    isFetchingNextPage: isFetchingNextGenerationsPage,
+  } = useInfiniteGenerationsByPlanIdQuery(plan?.planId ?? 0);
+  const generations = generationsData?.pages.flatMap((p) => p.generations);
+  const generationsSentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const sentinel = generationsSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextGenerationsPage && !isFetchingNextGenerationsPage) {
+          fetchNextGenerationsPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextGenerationsPage, isFetchingNextGenerationsPage, fetchNextGenerationsPage]);
   const { mutate: createGeneration, isPending: createGenerationPending } =
     useCreateGenerationMutation();
   const totalIncome =
@@ -575,9 +591,16 @@ function Dashboard() {
               ) : generationsError ? (
                 <div>Error loading AI recommendations</div>
               ) : generations ? (
-                generations.map((g) => (
-                  <GenerationItem key={g.generationId} g={g} />
-                ))
+                <>
+                  {generations.map((g) => (
+                    <GenerationItem key={g.generationId} g={g} />
+                  ))}
+                  <div ref={generationsSentinelRef} className="py-2">
+                    {isFetchingNextGenerationsPage && (
+                      <div className="text-sm text-gray-400">Loading more...</div>
+                    )}
+                  </div>
+                </>
               ) : (
                 <div></div>
               )}

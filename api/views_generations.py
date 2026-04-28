@@ -21,7 +21,7 @@ def serialize_generation(generation: Generation) -> dict:
 class GenerationsByPlanView(View):
 
     def get(self, request, plan_id):
-        """GET /api/v0/generations/<plan_id>/"""
+        """GET /api/v0/generations/<plan_id>/?page=1&pageSize=5"""
         user = get_request_user(request)
         if not user:
             return JsonResponse({"message": "Unauthorized"}, status=401)
@@ -31,8 +31,24 @@ class GenerationsByPlanView(View):
         except Plan.DoesNotExist:
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
-        generations = Generation.objects.filter(plan_id=plan_id)
-        return JsonResponse({"generations": [serialize_generation(g) for g in generations]}, status=200)
+        try:
+            page = max(1, int(request.GET.get("page", 1)))
+            page_size = min(50, max(1, int(request.GET.get("pageSize", 5))))
+        except ValueError:
+            return JsonResponse({"message": "Invalid pagination parameters"}, status=400)
+
+        offset = (page - 1) * page_size
+        qs = Generation.objects.filter(plan_id=plan_id).order_by("-created_at")
+        batch = list(qs[offset : offset + page_size + 1])
+        has_more = len(batch) > page_size
+
+        return JsonResponse(
+            {
+                "generations": [serialize_generation(g) for g in batch[:page_size]],
+                "hasMore": has_more,
+            },
+            status=200,
+        )
 
 
 @method_decorator(csrf_exempt, name="dispatch")

@@ -222,6 +222,11 @@ export interface DeleteGenerationArgs {
   generationId: number;
 }
 
+export interface PaginatedGenerationsResponse {
+  generations: Generation[];
+  hasMore: boolean;
+}
+
 export interface CreatePlanArgs {
   title: string;
 }

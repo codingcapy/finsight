@@ -1,5 +1,5 @@
 import {
-  queryOptions,
+  useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import type {
   DeserializedGeneration,
   CreateGenerationArgs,
   DeleteGenerationArgs,
+  PaginatedGenerationsResponse,
 } from "./types";
 
 export function mapSerializedGenerationToSchema(
@@ -48,21 +49,29 @@ export const useCreateGenerationMutation = (
   });
 };
 
-async function getGenerationsByPlanId(planId: number) {
+async function getGenerationsByPlanId(planId: number, page: number) {
   const token = getSession();
-  const res = await api.get<{ generations: Generation[] }>(
+  const res = await api.get<PaginatedGenerationsResponse>(
     `/generations/${planId}`,
     {
       headers: authHeaders(token),
+      params: { page, pageSize: 5 },
     },
   );
-  return res.data.generations.map(mapSerializedGenerationToSchema);
+  return {
+    generations: res.data.generations.map(mapSerializedGenerationToSchema),
+    hasMore: res.data.hasMore,
+  };
 }
 
-export const getGenerationsByPlanIdQueryOptions = (planId: number) =>
-  queryOptions({
+export const useInfiniteGenerationsByPlanIdQuery = (planId: number) =>
+  useInfiniteQuery({
     queryKey: ["generations", planId],
-    queryFn: () => getGenerationsByPlanId(planId),
+    queryFn: ({ pageParam }) => getGenerationsByPlanId(planId, pageParam as number),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages.length + 1 : undefined,
+    enabled: !!planId,
   });
 
 async function deleteGeneration(args: DeleteGenerationArgs) {
