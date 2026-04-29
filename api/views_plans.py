@@ -62,6 +62,9 @@ class PlansView(View):
         if not title or len(title) > 80:
             return JsonResponse({"message": "Invalid title"}, status=400)
 
+        if Plan.objects.filter(user=user).count() >= 20:
+            return JsonResponse({"message": "Plan limit reached"}, status=400)
+
         plan = Plan.objects.create(user=user, title=title)
 
         # Update user's current plan to the newly created one

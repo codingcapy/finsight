@@ -67,7 +67,8 @@ async function getGenerationsByPlanId(planId: number, page: number) {
 export const useInfiniteGenerationsByPlanIdQuery = (planId: number) =>
   useInfiniteQuery({
     queryKey: ["generations", planId],
-    queryFn: ({ pageParam }) => getGenerationsByPlanId(planId, pageParam as number),
+    queryFn: ({ pageParam }) =>
+      getGenerationsByPlanId(planId, pageParam as number),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) =>
       lastPage.hasMore ? allPages.length + 1 : undefined,

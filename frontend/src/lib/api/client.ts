@@ -14,6 +14,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error?.response?.data?.message;
+    if (message) {
+      return Promise.reject(new Error(message));
+    }
+    return Promise.reject(error);
+  },
+);
+
 export function authHeaders(token: string | null) {
   return token ? { Authorization: `Bearer ${token}` } : undefined;
 }

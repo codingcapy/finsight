@@ -102,7 +102,11 @@ function Dashboard() {
     if (!sentinel) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasNextGenerationsPage && !isFetchingNextGenerationsPage) {
+        if (
+          entries[0].isIntersecting &&
+          hasNextGenerationsPage &&
+          !isFetchingNextGenerationsPage
+        ) {
           fetchNextGenerationsPage();
         }
       },
@@ -110,7 +114,11 @@ function Dashboard() {
     );
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasNextGenerationsPage, isFetchingNextGenerationsPage, fetchNextGenerationsPage]);
+  }, [
+    hasNextGenerationsPage,
+    isFetchingNextGenerationsPage,
+    fetchNextGenerationsPage,
+  ]);
   const { mutate: createGeneration, isPending: createGenerationPending } =
     useCreateGenerationMutation();
   const totalIncome =
@@ -597,7 +605,9 @@ function Dashboard() {
                   ))}
                   <div ref={generationsSentinelRef} className="py-2">
                     {isFetchingNextGenerationsPage && (
-                      <div className="text-sm text-gray-400">Loading more...</div>
+                      <div className="text-sm text-gray-400">
+                        Loading more...
+                      </div>
                     )}
                   </div>
                 </>
